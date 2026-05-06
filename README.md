@@ -1,0 +1,242 @@
+# Bilan d'activité eikonlab — Template annuel
+
+Ce projet est un **template reproductible** : chaque année, une nouvelle instance est créée pour générer le bilan d'activité d'eikonlab. La structure reste la même, seul le contenu et style visuel changent.
+
+---
+
+## Vue d'ensemble
+
+Le projet repose sur deux activités bien distinctes :
+
+**1. Saisie du contenu** — via l'interface d'administration (Decap CMS) ou directement dans les fichiers JSON du dossier `src/_data/`. Aucune connaissance technique requise pour cette partie.
+
+**2. Mise en page et intégration** — les templates `.njk`, les styles SCSS et le JavaScript donnent forme aux données. C'est ici que travaillent les stagiaires.
+
+---
+
+## Démarrage
+
+```bash
+npm install       # à faire une seule fois
+npm run dev       # lance le serveur local
+```
+
+Le projet nécessite **deux serveurs simultanés** (deux terminaux) :
+
+| Terminal      | Commande           | URL                            |
+| ------------- | ------------------ | ------------------------------ |
+| 1 — Site      | `npm run dev`      | `http://localhost:8080`        |
+| 2 — Admin CMS | `npx decap-server` | `http://localhost:8080/admin/` |
+
+Le serveur admin est nécessaire uniquement pour la saisie de contenu via l'interface graphique. En dehors de cette utilisation, un seul terminal suffit.
+
+---
+
+## Mise en ligne
+
+```bash
+npm run build
+```
+
+Le dossier `_site/` contient le site compilé — des fichiers HTML, CSS et JS statiques prêts à déposer sur un hébergeur.
+
+| Méthode          | Instructions                                                                                  |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| FTP              | Déposer le contenu de `_site/` sur le serveur                                                 |
+| Netlify / Vercel | Connecter le dépôt Git, commande de build : `npm run build`, dossier de publication : `_site` |
+
+> Le dossier `_site/` est regénéré à chaque build — ne pas le modifier manuellement.
+
+---
+
+## Les deux faces du projet
+
+### Face 1 — Contenu : `src/_data/`
+
+Toutes les données du site vivent dans ce dossier sous forme de fichiers JSON. Ils peuvent être édités directement dans un éditeur de texte ou via l'interface d'administration.
+
+```
+src/_data/
+├── config.json          ← Infos générales : titre, organisation, édito, partenaires…
+├── encadrants.json      ← Liste des encadrant·es (nom, photo, titre, secteurs)
+├── interns.json         ← Stagiaires groupés par session (août–déc, jan–avr, avr–juil)
+└── projets/             ← Un fichier JSON par projet
+    ├── miam.json
+    └── ecole-de-couture.json
+```
+
+Chaque fichier projet contient : titre, sessions, stagiaires associé·es, type de mandat, client·es, description, images, vidéos, compétences, liens, témoignage client.
+
+`projets.js` lit automatiquement tous les fichiers du dossier `projets/` et les expose comme un tableau dans les templates — son nom de fichier devient l'identifiant URL du projet (`miam.json` → `/projets/miam/`).
+
+### Face 2 — Intégration : templates, styles, JS
+
+C'est ici que les données prennent forme. Trois technologies sont impliquées :
+
+- **Nunjucks (`.njk`)** — templates HTML avec logique d'affichage
+- **SCSS** — feuilles de style avec variables et imbrication
+- **JavaScript (esbuild)** — interactivité et animations
+
+---
+
+## Les templates Nunjucks (`.njk`)
+
+### Qu'est-ce que c'est ?
+
+Un fichier `.njk` est du HTML enrichi de balises Nunjucks — un langage de templates qui permet d'injecter des données, de faire des boucles et des conditions.
+
+```njk
+{# Ceci est un commentaire Nunjucks — il n'apparaît pas dans le HTML final #}
+
+{# Afficher une variable #}
+<h1>{{ config.titre }}</h1>
+
+{# Boucle sur un tableau #}
+{% for projet in projets %}
+  <p>{{ projet.titre }}</p>
+{% endfor %}
+
+{# Condition : afficher uniquement si le champ est renseigné #}
+{% if projet.clients %}
+  <p>{{ projet.clients }}</p>
+{% endif %}
+```
+
+Eleventy exécute ces templates au moment du build et génère du HTML statique classique. Le navigateur ne voit jamais de code Nunjucks.
+
+### Layouts et composants
+
+Le projet distingue deux types de templates :
+
+**Layouts** (`src/_layouts/`) — squelettes de pages. Chaque page déclare quel layout elle utilise dans son front matter :
+
+```njk
+---
+layout: base.njk
+title: Accueil
+---
+
+<h1>Mon contenu ici</h1>
+```
+
+`base.njk` fournit le `<head>`, les balises `<html>`, `<body>`, le chargement du CSS et du JS. `projet.njk` hérite de `base.njk` et ajoute la structure de la page projet.
+
+**Composants** (`src/_includes/`) — fragments réutilisables inclus dans les templates :
+
+```njk
+{% for projet in projets %}
+  {% include "carte-projet.njk" %}
+{% endfor %}
+```
+
+Le fichier inclus a accès aux mêmes variables que le template parent — ici `projet` est disponible dans `carte-projet.njk` sans passer de paramètre.
+
+---
+
+## Les styles SCSS (`src/styles/`)
+
+SCSS est une extension de CSS qui ajoute des variables, de l'imbrication et des imports. Il est compilé en CSS standard au build.
+
+```
+src/styles/
+├── main.scss          ← Point d'entrée — importe tous les autres fichiers
+├── _variables.scss    ← Couleurs, polices, espacements — commencer ici
+├── _base.scss         ← Reset global, typographie, polices Google
+└── _pages.scss        ← Mise en page des sections, cartes, blockquotes…
+```
+
+`main.scss` importe tout :
+
+```scss
+@use "variables" as *; // rend les variables disponibles partout avec $
+@use "base";
+@use "pages";
+```
+
+Modifier `_variables.scss` en premier — couleurs, typographie et espacements se propagent à tout le site.
+
+### Ajouter une librairie tierce (ex. GSAP)
+
+```bash
+npm install gsap
+```
+
+```js
+// src/js/main.js
+import gsap from "gsap";
+
+gsap.from("h1", { opacity: 0, y: 30, duration: 1 });
+```
+
+esbuild (le bundler) détecte l'import, intègre GSAP dans le fichier final et génère un seul fichier JS optimisé. Aucune configuration supplémentaire n'est nécessaire.
+
+---
+
+## Le JavaScript (`src/js/`)
+
+| Fichier     | Chargé sur                                     |
+| ----------- | ---------------------------------------------- |
+| `main.js`   | Toutes les pages (via `base.njk`)              |
+| `projet.js` | Les pages projet uniquement (via `projet.njk`) |
+
+Les fichiers sont bundlés par esbuild : les imports npm sont résolus, le code est minifié pour la production.
+
+---
+
+## Structure complète du projet
+
+```
+bilan-eleventy/
+│
+├── src/
+│   ├── _data/                 ← Contenu (JSON) — saisie via CMS ou éditeur
+│   │   ├── config.json
+│   │   ├── encadrants.json
+│   │   ├── interns.json
+│   │   ├── projets.js         ← Lit le dossier projets/ et retourne un tableau
+│   │   └── projets/
+│   │       └── *.json
+│   │
+│   ├── _layouts/              ← Squelettes de pages
+│   │   ├── base.njk           ← Wrappeur universel (head, body, CSS, JS)
+│   │   └── projet.njk         ← Page de détail d'un projet
+│   │
+│   ├── _includes/             ← Composants réutilisables
+│   │   └── carte-projet.njk
+│   │
+│   ├── admin/                 ← Interface Decap CMS (ne pas modifier)
+│   │   ├── index.html
+│   │   └── config.yml         ← Configuration des collections CMS
+│   │
+│   ├── styles/
+│   │   ├── main.scss
+│   │   ├── _variables.scss
+│   │   ├── _base.scss
+│   │   └── _pages.scss
+│   │
+│   ├── js/
+│   │   ├── main.js
+│   │   └── projet.js
+│   │
+│   ├── public/                ← Images et fichiers statiques (copiés tels quels)
+│   │   └── images/
+│   │
+│   ├── index.njk              ← Page d'accueil
+│   └── projets.njk            ← Génère une page par projet (pagination Eleventy)
+│
+├── _site/                     ← Build final (généré — ne pas modifier)
+├── eleventy.config.js         ← Configuration Eleventy
+├── package.json
+└── README.md
+```
+
+---
+
+## Commandes
+
+| Commande           | Description                                                   |
+| ------------------ | ------------------------------------------------------------- |
+| `npm install`      | Installe les dépendances (une seule fois)                     |
+| `npm run dev`      | Serveur local avec rechargement automatique                   |
+| `npx decap-server` | Proxy CMS pour l'édition locale des données (second terminal) |
+| `npm run build`    | Compile le site dans `_site/` pour la mise en ligne           |
