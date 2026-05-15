@@ -14,37 +14,32 @@ permalink: "/"
      - interns       → interns.json     (variable = objet entier)
    ============================================================ #}
 
-
 {# ── CONFIG : infos générales ───────────────────────────────── #}
 <header>
   <p>{{ config.organisation }}</p>
   <h1>{{ config.titre }}</h1>
-
- 
 </header>
 
- <section>
-    <h2>Mot du directeur</h2>
-     {# Champ texte long : on utilise | nl2br pour respecter les sauts de ligne #}
-    <p>{{ config.intro_directeur | markdown | safe }}</p>
-  </section>
+<section>
+  <h2>Mot du directeur</h2>
+  {# Champ texte long : on utilise | nl2br pour respecter les sauts de ligne #}
+  <p>{{ config.intro_directeur | markdown | safe }}</p>
+</section>
 
 <section>
   <h2>Avant-propos</h2>
   <p>{{ config.intro_edito | markdown | safe }}</p>
-  
-  
 
   {# Priorités : liste, on vérifie qu'elle n'est pas vide avant d'afficher #}
   {% if config.priorites and config.priorites.length %}
-  <h3>Les priorités pour eikonlab</h3>
+    <h3>Les priorités pour eikonlab</h3>
     <ol>
       {% for priorite in config.priorites %}
         <li>{{ priorite }}</li>
       {% endfor %}
     </ol>
   {% endif %}
-  </section>
+</section>
 
 {# ── MÉDIAS GÉNÉRAUX ─────────────────────────────────────────── #}
 {# Condition : on n'affiche la section que si le tableau contient au moins un élément #}
@@ -54,7 +49,7 @@ permalink: "/"
     <div>
       {% for media in config.medias %}
         <figure>
-          <img src="{{ media.fichier }}" alt="{{ media.legende }}">
+          <img src="{{ media.fichier | url }}" alt="{{ media.legende }}" />
           {# Condition : légende affichée uniquement si elle existe #}
           {% if media.legende %}
             <figcaption>{{ media.legende }}</figcaption>
@@ -64,7 +59,6 @@ permalink: "/"
     </div>
   </section>
 {% endif %}
-
 
 {# ── PROJETS ─────────────────────────────────────────────────── #}
 <section>
@@ -76,7 +70,6 @@ permalink: "/"
   </ul>
 </section>
 
-
 {# ── ÉQUIPE : encadrants ─────────────────────────────────────── #}
 {# encadrants.encadrants : le fichier encadrants.json a la clé "encadrants" à la racine #}
 {% if encadrants.encadrants and encadrants.encadrants.length %}
@@ -87,7 +80,7 @@ permalink: "/"
         <li>
           {# Condition : photo affichée uniquement si le champ est renseigné #}
           {% if encadrant.photo %}
-            <img src="{{ encadrant.photo }}" alt="{{ encadrant.nom }}">
+            <img src="{{ encadrant.photo }}" alt="{{ encadrant.nom }}" />
           {% endif %}
 
           <strong>{{ encadrant.nom }}</strong>
@@ -110,18 +103,19 @@ permalink: "/"
   </section>
 {% endif %}
 
-
 {# ── ÉQUIPE : stagiaires par session ─────────────────────────── #}
 {# interns.aout_decembre / .janvier_avril / .avril_juillet
    sont les trois tableaux définis dans interns.json #}
 <section>
   <h2>Stagiaires</h2>
 
-  {% set sessions = [
-    { label: "Août – décembre",  liste: stagiaires.aout_decembre },
-    { label: "Janvier – avril",  liste: stagiaires.janvier_avril },
-    { label: "Avril – juillet",  liste: stagiaires.avril_juillet }
-  ] %}
+  {%
+    set sessions = [
+      { label: "Août – décembre",  liste: stagiaires.aout_decembre },
+      { label: "Janvier – avril",  liste: stagiaires.janvier_avril },
+      { label: "Avril – juillet",  liste: stagiaires.avril_juillet }
+    ]
+  %}
 
   {% for session in sessions %}
     {# Condition : on n'affiche une session que si elle a au moins un stagiaire #}
@@ -131,7 +125,7 @@ permalink: "/"
         {% for stagiaire in session.liste %}
           <li>
             {% if stagiaire.photo %}
-              <img src="{{ stagiaire.photo }}" alt="{{ stagiaire.nom }}">
+              <img src="{{ stagiaire.photo }}" alt="{{ stagiaire.nom }}" />
             {% endif %}
             {{ stagiaire.nom }}
           </li>
@@ -140,7 +134,6 @@ permalink: "/"
     {% endif %}
   {% endfor %}
 </section>
-
 
 {# ── PARTENAIRES ─────────────────────────────────────────────── #}
 {% if config.partenaires and config.partenaires.length %}
@@ -154,7 +147,6 @@ permalink: "/"
   </section>
 {% endif %}
 
-
 {# ── RESSOURCES ──────────────────────────────────────────────── #}
 {# Condition : champ texte simple, on vérifie qu'il n'est pas vide #}
 {% if config.ressources %}
@@ -163,7 +155,6 @@ permalink: "/"
     <p>{{ config.ressources | markdown | safe }}</p>
   </section>
 {% endif %}
-
 
 <footer>
   <p>{{ config.organisation }}</p>
