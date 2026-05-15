@@ -20,12 +20,12 @@
         {{ title }} —
       {% endif %}
       {{ config.titre }}</title>
-    <link rel="stylesheet" href="/styles/main.css"/>
+    <link rel="stylesheet" href="/assets/styles/main.css"/>
   </head>
   <body>
     {# Le contenu de chaque page est injecté ici #}
     {{ content | safe }}
-    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/assets/js/main.js"></script>
     {% block scripts %}{% endblock %}
   </body>
 </html>

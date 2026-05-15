@@ -24,7 +24,7 @@ export default function (eleventyConfig) {
   }
 
   // Exclure les SCSS du build (traités séparément par sass)
-  eleventyConfig.ignores.add("src/styles");
+  eleventyConfig.ignores.add("src/assets");
 
   // --- Filtre markdown ---
   // Convertit du texte Markdown (produit par widget: markdown dans le CMS)
