@@ -54,6 +54,27 @@ PATH_PREFIX=/nom-du-dossier/ npm run build
 
 Tous les liens internes et les assets s'adaptent automatiquement. Pour une URL racine (ex. `https://2025.bilan-activite.ch`), un `npm run build` sans variable suffit.
 
+### Déploiement automatique via GitHub Actions
+
+Le fichier `.github/workflows/deploy.yml` automatise le build et le déploiement FTP à chaque push sur la branche `main`. Le dossier distant est vidé puis remplacé intégralement par le contenu de `_site/` — le serveur reflète toujours exactement le dernier build.
+
+**1. Configurer les secrets** (Settings → Secrets and variables → Actions → Secrets) :
+
+| Secret         | Description                                    |
+| -------------- | ---------------------------------------------- |
+| `FTP_SERVER`   | Adresse du serveur FTP (ex. `ftp.at-eikon.ch`) |
+| `FTP_USERNAME` | Identifiant FTP                                |
+| `FTP_PASSWORD` | Mot de passe FTP                               |
+
+**2. Configurer les variables** (Settings → Secrets and variables → Actions → Variables) :
+
+| Variable         | Description                                                                |
+| ---------------- | -------------------------------------------------------------------------- |
+| `FTP_SERVER_DIR` | Chemin vers le ossier cible sur le serveur (ex. `/www/bilan-activite/`)    |
+| `PATH_PREFIX`    | Préfixe d'URL si sous-dossier (ex. `/bilan-activite/`), laisser vide sinon |
+
+Une fois configuré, pousser sur `main` suffit à mettre le site à jour. Il est aussi possible de déclencher le déploiement manuellement depuis l'onglet **Actions** du dépôt GitHub.
+
 ---
 
 ## Les deux faces du projet
