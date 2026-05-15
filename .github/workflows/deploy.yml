@@ -35,6 +35,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
           local-dir: ./_site/
           server-dir: ${{ vars.FTP_SERVER_DIR }}
           dangerous-clean-slate: true
