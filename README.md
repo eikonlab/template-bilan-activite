@@ -21,14 +21,12 @@ npm install       # à faire une seule fois
 npm run dev       # lance le serveur local
 ```
 
-Le projet nécessite **deux serveurs simultanés** (deux terminaux) :
+Un seul terminal suffit : `npm run dev` démarre simultanément Eleventy, la compilation SCSS, le bundler JS et le proxy CMS.
 
-| Terminal      | Commande           | URL                            |
-| ------------- | ------------------ | ------------------------------ |
-| 1 — Site      | `npm run dev`      | `http://localhost:8080`        |
-| 2 — Admin CMS | `npx decap-server` | `http://localhost:8080/admin/` |
-
-Le serveur admin est nécessaire uniquement pour la saisie de contenu via l'interface graphique. En dehors de cette utilisation, un seul terminal suffit.
+| URL                            | Description                |
+| ------------------------------ | -------------------------- |
+| `http://localhost:8080`        | Site en développement      |
+| `http://localhost:8080/admin/` | Interface d'administration |
 
 ---
 
@@ -38,12 +36,11 @@ Le serveur admin est nécessaire uniquement pour la saisie de contenu via l'inte
 npm run build
 ```
 
-Le dossier `_site/` contient le site compilé — des fichiers HTML, CSS et JS statiques prêts à déposer sur un hébergeur.
+Le dossier `_site/` contient le site compilé — des fichiers HTML, CSS et JS statiques prêts à déposer sur un hébergeur. Le CSS et le JS sont automatiquement minifiés et compressés. L'interface d'administration est exclue du build (usage local uniquement).
 
-| Méthode          | Instructions                                                                                  |
-| ---------------- | --------------------------------------------------------------------------------------------- |
-| FTP              | Déposer le contenu de `_site/` sur le serveur                                                 |
-| Netlify / Vercel | Connecter le dépôt Git, commande de build : `npm run build`, dossier de publication : `_site` |
+| Méthode         | Instructions                                  |
+| --------------- | --------------------------------------------- |
+| FTP (CyberDuck) | Déposer le contenu de `_site/` sur le serveur |
 
 > Le dossier `_site/` est regénéré à chaque build — ne pas le modifier manuellement.
 
@@ -59,7 +56,7 @@ Toutes les données du site vivent dans ce dossier sous forme de fichiers JSON. 
 src/_data/
 ├── config.json          ← Infos générales : titre, organisation, édito, partenaires…
 ├── encadrants.json      ← Liste des encadrant·es (nom, photo, titre, secteurs)
-├── interns.json         ← Stagiaires groupés par session (août–déc, jan–avr, avr–juil)
+├── stagiaires.json      ← Stagiaires groupés par session (août–déc, jan–avr, avr–juil)
 └── projets/             ← Un fichier JSON par projet
     ├── miam.json
     └── ecole-de-couture.json
@@ -108,7 +105,7 @@ Eleventy exécute ces templates au moment du build et génère du HTML statique 
 
 Le projet distingue deux types de templates :
 
-**Layouts** (`src/_layouts/`) — squelettes de pages. Chaque page déclare quel layout elle utilise dans son front matter :
+**Layouts** (`src/views/_layouts/`) — squelettes de pages. Chaque page déclare quel layout elle utilise dans son front matter :
 
 ```njk
 ---
@@ -119,9 +116,9 @@ title: Accueil
 <h1>Mon contenu ici</h1>
 ```
 
-`base.njk` fournit le `<head>`, les balises `<html>`, `<body>`, le chargement du CSS et du JS. `projet.njk` hérite de `base.njk` et ajoute la structure de la page projet.
+`base.njk` fournit le `<head>`, les balises `<html>`, `<body>`, le chargement du CSS et du JS commun. `projet.njk` hérite de `base.njk` et ajoute la structure de la page projet, ainsi que le chargement de `projet.js`.
 
-**Composants** (`src/_includes/`) — fragments réutilisables inclus dans les templates :
+**Composants** (`src/views/_includes/`) — fragments réutilisables inclus dans les templates :
 
 ```njk
 {% for projet in projets %}
@@ -133,12 +130,12 @@ Le fichier inclus a accès aux mêmes variables que le template parent — ici `
 
 ---
 
-## Les styles SCSS (`src/styles/`)
+## Les styles SCSS (`src/assets/styles/`)
 
 SCSS est une extension de CSS qui ajoute des variables, de l'imbrication et des imports. Il est compilé en CSS standard au build.
 
 ```
-src/styles/
+src/assets/styles/
 ├── main.scss          ← Point d'entrée — importe tous les autres fichiers
 ├── _variables.scss    ← Couleurs, polices, espacements — commencer ici
 ├── _base.scss         ← Reset global, typographie, polices Google
@@ -155,24 +152,9 @@ src/styles/
 
 Modifier `_variables.scss` en premier — couleurs, typographie et espacements se propagent à tout le site.
 
-### Ajouter une librairie tierce (ex. GSAP)
-
-```bash
-npm install gsap
-```
-
-```js
-// src/js/main.js
-import gsap from "gsap";
-
-gsap.from("h1", { opacity: 0, y: 30, duration: 1 });
-```
-
-esbuild (le bundler) détecte l'import, intègre GSAP dans le fichier final et génère un seul fichier JS optimisé. Aucune configuration supplémentaire n'est nécessaire.
-
 ---
 
-## Le JavaScript (`src/js/`)
+## Le JavaScript (`src/assets/js/`)
 
 | Fichier     | Chargé sur                                     |
 | ----------- | ---------------------------------------------- |
@@ -180,6 +162,23 @@ esbuild (le bundler) détecte l'import, intègre GSAP dans le fichier final et g
 | `projet.js` | Les pages projet uniquement (via `projet.njk`) |
 
 Les fichiers sont bundlés par esbuild : les imports npm sont résolus, le code est minifié pour la production.
+
+---
+
+### Ajouter une librairie tierce (ex. GSAP)
+
+```bash
+npm install gsap
+```
+
+```js
+// src/assets/js/main.js
+import gsap from "gsap";
+
+gsap.from("h1", { opacity: 0, y: 30, duration: 1 });
+```
+
+esbuild (le bundler) détecte l'import, intègre GSAP dans le fichier final et génère un seul fichier JS optimisé. Aucune configuration supplémentaire n'est nécessaire.
 
 ---
 
@@ -192,37 +191,37 @@ bilan-eleventy/
 │   ├── _data/                 ← Contenu (JSON) — saisie via CMS ou éditeur
 │   │   ├── config.json
 │   │   ├── encadrants.json
-│   │   ├── interns.json
+│   │   ├── stagiaires.json
 │   │   ├── projets.js         ← Lit le dossier projets/ et retourne un tableau
 │   │   └── projets/
 │   │       └── *.json
 │   │
-│   ├── _layouts/              ← Squelettes de pages
-│   │   ├── base.njk           ← Wrappeur universel (head, body, CSS, JS)
-│   │   └── projet.njk         ← Page de détail d'un projet
+│   ├── views/                 ← Tous les fichiers de templates
+│   │   ├── _layouts/          ← Squelettes de pages
+│   │   │   ├── base.njk       ← Wrappeur universel (head, body, CSS, JS)
+│   │   │   └── projet.njk     ← Page de détail d'un projet
+│   │   ├── _includes/         ← Composants réutilisables
+│   │   │   └── carte-projet.njk
+│   │   ├── index.njk          ← Page d'accueil
+│   │   └── projets.njk        ← Génère une page par projet (pagination Eleventy)
 │   │
-│   ├── _includes/             ← Composants réutilisables
-│   │   └── carte-projet.njk
+│   ├── assets/                ← Fichiers compilés/bundlés par les outils de build
+│   │   ├── styles/
+│   │   │   ├── main.scss
+│   │   │   ├── _variables.scss
+│   │   │   ├── _base.scss
+│   │   │   ├── _pages.scss
+│   │   │   └── components/
+│   │   └── js/
+│   │       ├── main.js
+│   │       └── projet.js
 │   │
-│   ├── admin/                 ← Interface Decap CMS (ne pas modifier)
+│   ├── admin/                 ← Interface Decap CMS (dev uniquement, non déployé)
 │   │   ├── index.html
 │   │   └── config.yml         ← Configuration des collections CMS
 │   │
-│   ├── styles/
-│   │   ├── main.scss
-│   │   ├── _variables.scss
-│   │   ├── _base.scss
-│   │   └── _pages.scss
-│   │
-│   ├── js/
-│   │   ├── main.js
-│   │   └── projet.js
-│   │
-│   ├── public/                ← Images et fichiers statiques (copiés tels quels)
-│   │   └── images/
-│   │
-│   ├── index.njk              ← Page d'accueil
-│   └── projets.njk            ← Génère une page par projet (pagination Eleventy)
+│   └── public/                ← Images et fichiers statiques (copiés tels quels)
+│       └── images/
 │
 ├── _site/                     ← Build final (généré — ne pas modifier)
 ├── eleventy.config.js         ← Configuration Eleventy
@@ -234,9 +233,8 @@ bilan-eleventy/
 
 ## Commandes
 
-| Commande           | Description                                                   |
-| ------------------ | ------------------------------------------------------------- |
-| `npm install`      | Installe les dépendances (une seule fois)                     |
-| `npm run dev`      | Serveur local avec rechargement automatique                   |
-| `npx decap-server` | Proxy CMS pour l'édition locale des données (second terminal) |
-| `npm run build`    | Compile le site dans `_site/` pour la mise en ligne           |
+| Commande        | Description                                                    |
+| --------------- | -------------------------------------------------------------- |
+| `npm install`   | Installe les dépendances (une seule fois)                      |
+| `npm run dev`   | Serveur local avec rechargement automatique + proxy CMS        |
+| `npm run build` | Compile et minifie le site dans `_site/` pour la mise en ligne |
