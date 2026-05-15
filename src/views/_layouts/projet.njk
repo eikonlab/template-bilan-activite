@@ -9,7 +9,7 @@ layout: base.njk
    Toutes les données sont affichées, avec des {% if %} pour
    les champs optionnels — c'est ça la logique conditionnelle.
    ============================================================ #}
-<a href="/">← Retour</a>
+<a href="{{ '/' | url }}">← Retour</a>
 <article>
   {# ── Champs toujours présents ─────────────────────────── #}
   <h1>{{ projet.titre }}</h1>
@@ -132,5 +132,5 @@ layout: base.njk
     {% endif %}
   </article>
   {% block scripts %}
-    <script type="module" src="/assets/js/projet.js"></script>
+    <script type="module" src="{{ '/assets/js/projet.js' | url }}"></script>
   {% endblock %}

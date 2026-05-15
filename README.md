@@ -44,6 +44,16 @@ Le dossier `_site/` contient le site compilé — des fichiers HTML, CSS et JS s
 
 > Le dossier `_site/` est regénéré à chaque build — ne pas le modifier manuellement.
 
+### Hébergement dans un sous-dossier
+
+Si le site est publié dans un sous-dossier (ex. `https://prenom-nom.at-eikon.ch/bilan-activite/`), passer la variable `PATH_PREFIX` au moment du build :
+
+```bash
+PATH_PREFIX=/nom-du-dossier/ npm run build
+```
+
+Tous les liens internes et les assets s'adaptent automatiquement. Pour une URL racine (ex. `https://2025.bilan-activite.ch`), un `npm run build` sans variable suffit.
+
 ---
 
 ## Les deux faces du projet

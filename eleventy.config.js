@@ -34,6 +34,7 @@ export default function (eleventyConfig) {
 
   // --- Configuration des dossiers ---
   return {
+    pathPrefix: process.env.PATH_PREFIX ?? "/",
     dir: {
       input:    "src",
       output:   "_site",
