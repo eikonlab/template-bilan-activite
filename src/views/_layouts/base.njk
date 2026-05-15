@@ -26,5 +26,6 @@
     {# Le contenu de chaque page est injecté ici #}
     {{ content | safe }}
     <script type="module" src="/js/main.js"></script>
+    {% block scripts %}{% endblock %}
   </body>
 </html>
