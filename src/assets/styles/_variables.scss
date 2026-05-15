@@ -2,16 +2,16 @@
 // =======================
 
 // Couleurs
-$couleur-fond:         #F9F7F2;
-$couleur-texte:        #1A1A18;
-$couleur-accent:       #2D6A4F;
-$couleur-accent-clair: #B7E4C7;
-$couleur-gris:         #6B6B63;
-$couleur-bordure:      #DDD9D0;
+$couleur-fond: #f9f7f2;
+$couleur-texte: #1a1a18;
+$couleur-accent: #2d6a4f;
+$couleur-accent-clair: #b7e4c7;
+$couleur-gris: #6b6b63;
+$couleur-bordure: #ddd9d0;
 
 // Typographie
-$font-titre: 'Playfair Display', serif;
-$font-corps: 'DM Sans', sans-serif;
+$font-titre: "Playfair Display", serif;
+$font-corps: "DM Sans", sans-serif;
 
 // Espacement
 $espace-xs: 8px;
@@ -21,9 +21,9 @@ $espace-lg: 48px;
 $espace-xl: 80px;
 
 // Grilles
-$colonnes-projets:      repeat(auto-fill, minmax(280px, 1fr));
+$colonnes-projets: repeat(auto-fill, minmax(280px, 1fr));
 $colonnes-intervenants: repeat(auto-fill, minmax(220px, 1fr));
-$colonnes-chiffres:     repeat(4, 1fr);
+$colonnes-chiffres: repeat(4, 1fr);
 
 // Misc
 $rayon: 6px;

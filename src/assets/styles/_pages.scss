@@ -3,7 +3,7 @@
 // On cible les éléments HTML sémantiques directement,
 // puisque les templates n'utilisent pas de classes BEM.
 
-@use 'variables' as *;
+@use "variables" as *;
 
 // ── Conteneur centré global ───────────────────────────────────
 // Appliqué à toutes les sections/header/footer de la page.
@@ -91,7 +91,9 @@ section:has(> ul > li > a[href^="/projets/"]) li {
   overflow: hidden;
   transition: box-shadow 0.2s;
 
-  &:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
 
   a {
     display: block;
@@ -105,12 +107,20 @@ section:has(> ul > li > a[href^="/projets/"]) li {
       object-fit: cover;
     }
 
-    h3, p {
+    h3,
+    p {
       padding-inline: $espace-sm;
       max-width: none;
     }
-    h3 { padding-top: $espace-sm; margin-bottom: $espace-xs; }
-    p  { color: $couleur-gris; font-size: 0.9rem; padding-bottom: $espace-sm; }
+    h3 {
+      padding-top: $espace-sm;
+      margin-bottom: $espace-xs;
+    }
+    p {
+      color: $couleur-gris;
+      font-size: 0.9rem;
+      padding-bottom: $espace-sm;
+    }
   }
 }
 
@@ -132,8 +142,14 @@ section:has(h2) ul:has(> li > strong) {
       border-radius: $rayon;
     }
 
-    strong { font-family: $font-titre; font-size: 1rem; }
-    span   { font-size: 0.85rem; color: $couleur-gris; }
+    strong {
+      font-family: $font-titre;
+      font-size: 1rem;
+    }
+    span {
+      font-size: 0.85rem;
+      color: $couleur-gris;
+    }
 
     // Sous-liste des secteurs
     ul {
@@ -218,7 +234,9 @@ section:has(figure) > div {
   columns: 2;
   gap: $espace-md;
 
-  @media (max-width: 600px) { columns: 1; }
+  @media (max-width: 600px) {
+    columns: 1;
+  }
 }
 
 // ── Page projet ───────────────────────────────────────────────
@@ -229,7 +247,8 @@ article {
     margin-bottom: $espace-sm;
   }
 
-  > p, > section > p {
+  > p,
+  > section > p {
     margin-bottom: $espace-sm;
     max-width: 65ch;
   }
@@ -241,11 +260,15 @@ article {
     text-decoration: none;
     margin-bottom: $espace-lg;
 
-    &:hover { color: $couleur-accent; }
+    &:hover {
+      color: $couleur-accent;
+    }
   }
 
   // Images du projet
-  section:has(figure) > figure + figure { margin-top: $espace-md; }
+  section:has(figure) > figure + figure {
+    margin-top: $espace-md;
+  }
 
   // Liens
   section > ul > li > a {
