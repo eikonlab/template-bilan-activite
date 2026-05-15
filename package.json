@@ -8,7 +8,7 @@
     "dev:cms": "decap-server",
     "dev:sass": "sass src/styles/main.scss:_site/styles/main.css --watch --no-source-map",
     "dev:js": "esbuild src/js/main.js src/js/projet.js --bundle --outdir=_site/js --watch --format=esm",
-    "build": "eleventy && sass src/styles/main.scss _site/styles/main.css --no-source-map && esbuild src/js/main.js src/js/projet.js --bundle --outdir=_site/js --format=esm --minify"
+    "build": "NODE_ENV=production eleventy && sass src/styles/main.scss _site/styles/main.css --no-source-map --style=compressed && esbuild src/js/main.js src/js/projet.js --bundle --outdir=_site/js --format=esm --minify"
   },
   "dependencies": {
     "@11ty/eleventy": "^3.0.0",

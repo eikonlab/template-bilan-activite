@@ -15,7 +15,16 @@ export default function (eleventyConfig) {
 
   // --- Fichiers copiés tels quels dans le build ---
   eleventyConfig.addPassthroughCopy("src/public");
-  eleventyConfig.addPassthroughCopy("src/admin");
+
+  // Admin disponible uniquement en dev (jamais déployé)
+  if (process.env.NODE_ENV !== "production") {
+    eleventyConfig.addPassthroughCopy("src/admin");
+  } else {
+    eleventyConfig.ignores.add("src/admin");
+  }
+
+  // Exclure les SCSS du build (traités séparément par sass)
+  eleventyConfig.ignores.add("src/styles");
 
   // --- Filtre markdown ---
   // Convertit du texte Markdown (produit par widget: markdown dans le CMS)
@@ -28,8 +37,8 @@ export default function (eleventyConfig) {
     dir: {
       input:    "src",
       output:   "_site",
-      includes: "_includes",
-      layouts:  "_layouts",
+      includes: "views/_includes",
+      layouts:  "views/_layouts",
       data:     "_data",
     },
     markdownTemplateEngine: "njk",
