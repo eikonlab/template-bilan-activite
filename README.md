@@ -16,7 +16,10 @@ Le projet repose sur deux activités bien distinctes :
 
 ## Démarrage
 
+Le projet requiert **Node.js 24**. Un fichier `.nvmrc` est inclus à la racine — si tu utilises [nvm](https://github.com/nvm-sh/nvm), un simple `nvm use` dans le dossier bascule automatiquement sur la bonne version.
+
 ```bash
+nvm use           # bascule sur Node 24 (si nvm est installé)
 npm install       # à faire une seule fois
 npm run dev       # lance le serveur local
 ```
